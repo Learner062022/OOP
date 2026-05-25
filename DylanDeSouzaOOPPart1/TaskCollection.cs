@@ -73,6 +73,33 @@ namespace DylanDeSouzaOOPPart1
                 }
             }
         }
+
+        void WriteTaskList(BinaryWriter writer, TaskList list)
+        {
+            writer.Write(list.Name);
+            writer.Write(list.NumTasks);
+
+            foreach (var task in list.Tasks)
+            {
+                WriteTask(writer, task);
+            }
+        }
+
+        TaskList ReadTaskList(BinaryReader reader)
+        {
+            string name = reader.ReadString();
+            TaskList list = new TaskList(name);
+            int numTasks = reader.ReadInt32();
+
+            while (numTasks > 0)
+            {
+                Task task = ReadTask(reader);
+                list.AddTask(task);
+                numTasks--;
+            }
+
+            return list;
+        }
         public int TotalNumTasks
         {
             get

@@ -28,6 +28,51 @@ namespace DylanDeSouzaOOPPart1
             return File.Open(filePath, mode);
         }
 
+        async void load()
+        {
+            try
+            {
+                file = await storageFolder.CreateFileAsync(FILENAME, CreationCollisionOption.OpenIfExists);
+                taskLists.Clear();
+            }
+            catch (FileNotFoundException)
+            {
+                file = await storageFolder.CreateFileAsync(FILENAME);
+            }
+
+            Debug.WriteLine($"FilePath: {file.Path}");
+
+            using (var reader = new BinaryReader(OpenFileStream(FileMode.Open), Encoding.UTF8, false))
+            {
+                if (reader.BaseStream.Length == 0)
+                {
+                    return;
+                }
+
+                int numLists = reader.ReadInt32();
+
+                while (numLists > 0)
+                {
+                    TaskList list = ReadTaskList(reader);
+                    taskLists.Add(list);
+                    numLists--;
+                }
+            }
+        }
+
+        void save()
+        {
+            using (var writer = new BinaryWriter(OpenFileStream(FileMode.Create), Encoding.UTF8, false))
+            {
+                int numLists = taskLists.Count;
+                writer.Write(numLists);
+
+                foreach (TaskList list in taskLists)
+                {
+                    WriteTaskList(writer, list);
+                }
+            }
+        }
         public int TotalNumTasks
         {
             get

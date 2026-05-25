@@ -100,6 +100,64 @@ namespace DylanDeSouzaOOPPart1
 
             return list;
         }
+
+        void WriteTask(BinaryWriter writer, Task task)
+        {
+            writer.Write(task.Description);
+
+            bool hasNotes = !string.IsNullOrWhiteSpace(task.Notes);
+
+            writer.Write(hasNotes);
+
+            if (hasNotes)
+            {
+                writer.Write(task.Notes);
+            }
+
+            writer.Write(task.IsComplete);
+            writer.Write(task.Created.ToBinary());
+            writer.Write(task.TargetDate.HasValue);
+
+            if (task.TargetDate.HasValue)
+            {
+                writer.Write(task.TargetDate.Value.ToBinary());
+            }
+
+            writer.Write(task.Prio.Value);
+        }
+
+        Task ReadTask(BinaryReader reader)
+        {
+            string description = reader.ReadString();
+
+            bool hasNotes = reader.ReadBoolean();
+
+            string notes = null;
+
+            if (hasNotes)
+            {
+                notes = reader.ReadString();
+            }
+
+            bool isComplete = reader.ReadBoolean();
+            DateTime created = DateTime.FromBinary(reader.ReadInt64());
+            bool hasTargetDate = reader.ReadBoolean();
+            DateTime? targetDate;
+
+            if (hasTargetDate)
+            {
+                targetDate = DateTime.FromBinary(reader.ReadInt64());
+            }
+            else
+            {
+                targetDate = null;
+            }
+
+            int priorityValue = reader.ReadInt32();
+
+            return new Task(description, notes, isComplete, created, targetDate, priorityValue);
+        }
+
         public int TotalNumTasks
         {
             get

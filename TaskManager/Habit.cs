@@ -9,6 +9,7 @@ namespace TaskManager
 
         public Habit(
             string description,
+            bool isComplete,
             Frequency frequency,
             string? notes = null
         ) : base(description, frequency)

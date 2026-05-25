@@ -66,6 +66,10 @@ namespace TaskManager
             {
                 return isComplete;
             }
+            private set
+            {
+                isComplete = value;
+            }
         }
 
         public DateTime Created
@@ -73,6 +77,10 @@ namespace TaskManager
             get
             {
                 return created;
+            }
+            private set
+            {
+                created = value;
             }
         }
 

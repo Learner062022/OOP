@@ -33,6 +33,22 @@ namespace TaskManager
             priority = new Priority(0);
         }
 
+        public Task(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            int priorityVal)
+        {
+            this.description = description;
+            this.notes = notes;
+            IsComplete = isComplete;
+            Created = created;
+            this.targetDate = targetDate;
+            priority = new Priority(priorityVal);
+        }
+
         public string Description
         {
             get

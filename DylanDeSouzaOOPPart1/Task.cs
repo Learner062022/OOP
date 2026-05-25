@@ -7,7 +7,9 @@ namespace DylanDeSouzaOOPPart1
         string description;
         string notes;
         bool isComplete;
-        readonly DateTime? created;
+        DateTime created;
+        DateTime? targetDate;
+        Priority priority;
 
         public Task(string description, string notes = null)
         {
@@ -24,6 +26,22 @@ namespace DylanDeSouzaOOPPart1
 
             isComplete = false;
             this.notes = notes;
+        }
+
+        public Task(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            int priorityVal)
+        {
+            this.description = description;
+            this.notes = notes;
+            IsComplete = isComplete;
+            Created = created;
+            this.targetDate = targetDate;
+            priority = new Priority(priorityVal);
         }
 
         public string Description

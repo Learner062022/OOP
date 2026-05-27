@@ -117,10 +117,22 @@ namespace DylanDeSouzaOOPPart1
             return list;
         }
 
+        void WriteOptionalDate(BinaryWriter writer, DateTime? date)
+        {
+            bool hasValue = date.HasValue;
+            writer.Write(hasValue);
+
+            if (hasValue)
+            {
+                writer.Write(date.Value.ToBinary());
+            }
+        }
+
         void WriteTask(BinaryWriter writer, Task task)
         {
             writer.Write(task.GetType().Name);
             writer.Write(task.Description);
+
             bool hasNotes = !string.IsNullOrWhiteSpace(task.Notes);
             writer.Write(hasNotes);
 
@@ -133,65 +145,58 @@ namespace DylanDeSouzaOOPPart1
             writer.Write(task.Created.ToBinary());
             writer.Write(task.TargetDate.HasValue);
 
-            if (task.TargetDate.HasValue)
-            {
-                writer.Write(task.TargetDate.Value.ToBinary());
-            }
-
+            WriteOptionalDate(writer, task.TargetDate);
             writer.Write(task.Priority.Value);
-            
+
             switch (task)
             {
                 case Habit habit:
                     writer.Write((int)habit.RepeatFrequency);
+                    WriteOptionalDate(writer, habit.RepeatDate);
                     writer.Write(habit.CompletionStreak);
                     break;
 
                 case RepeatingTasks repeatingTasks:
-                    bool hasValue = repeatingTasks.RepeatDate.HasValue;
-                    writer.Write(hasValue);
-
-                    if (hasValue)
-                    {
-                        writer.Write(repeatingTasks.RepeatDate.Value.ToBinary());
-                    }
-
+                    writer.Write((int)repeatingTasks.RepeatFrequency);
+                    WriteOptionalDate(writer, repeatingTasks.RepeatDate);
                     break;
             }
+        }
+
+        DateTime? ReadOptionalDate(BinaryReader reader)
+        {
+            bool hasDate = reader.ReadBoolean();
+            DateTime? optionalDate;
+
+            if (hasDate)
+            {
+                optionalDate = DateTime.FromBinary(reader.ReadInt64());
+            }
+            else
+            {
+                optionalDate = null;
+            }
+
+            return optionalDate;
         }
 
         Task ReadTask(BinaryReader reader)
         {
             string taskType = reader.ReadString();
-
             string description = reader.ReadString();
 
-            bool hasNotes = reader.ReadBoolean();
-            string notes = hasNotes ? reader.ReadString() : null;
-
+            string notes = reader.ReadBoolean() ? reader.ReadString() : null;
             bool isComplete = reader.ReadBoolean();
+
             DateTime created = DateTime.FromBinary(reader.ReadInt64());
-
-            bool hasTargetDate = reader.ReadBoolean();
-            DateTime? targetDate;
-
-            if (hasTargetDate)
-            {
-                targetDate = DateTime.FromBinary(reader.ReadInt64());
-            }
-            else
-            {
-                targetDate = null;
-            }
-
+            DateTime? targetDate = ReadOptionalDate(reader);
             Priority priority = new Priority(reader.ReadInt32());
-
-            Task task = null;
 
             switch (taskType)
             {
                 case "Task":
-                    task = new Task(
+                {
+                    return new Task(
                         description,
                         notes,
                         isComplete,
@@ -199,25 +204,14 @@ namespace DylanDeSouzaOOPPart1
                         targetDate,
                         priority
                     );
-
-                    break;
+                }
 
                 case "RepeatingTasks":
                 {
                     Frequency frequency = (Frequency)reader.ReadInt32();
-                    DateTime? repeatDate;
-                    bool hasRepeatDate = reader.ReadBoolean();
+                    DateTime? repeatDate = ReadOptionalDate(reader);
 
-                    if (hasRepeatDate)
-                    {
-                        repeatDate = DateTime.FromBinary(reader.ReadInt64());
-                    }
-                    else
-                    {
-                        repeatDate = null;
-                    }
-
-                    task = new RepeatingTasks(
+                    return new RepeatingTasks(
                         description,
                         notes,
                         isComplete,
@@ -227,17 +221,15 @@ namespace DylanDeSouzaOOPPart1
                         frequency,
                         repeatDate
                     );
-
-                    break;
                 }
-                    
 
                 case "Habit":
                 {
                     Frequency frequency = (Frequency)reader.ReadInt32();
+                    DateTime? repeatDate = ReadOptionalDate(reader);
                     int streak = reader.ReadInt32();
 
-                    task = new Habit(
+                    return new Habit(
                         description,
                         notes,
                         isComplete,
@@ -247,13 +239,10 @@ namespace DylanDeSouzaOOPPart1
                         frequency,
                         streak
                     );
-
-                    break;
                 }
-                    
             }
-            
-            return task;
+
+            return null;
         }
 
         public int TotalNumTasks

@@ -13,7 +13,7 @@ namespace DylanDeSouzaOOPPart1
 
         public Task(string description, string notes = null)
         {
-            Created = DateTime.Now.Date;
+            created = DateTime.Now.Date;
 
             if (string.IsNullOrWhiteSpace(description))
             {
@@ -26,6 +26,7 @@ namespace DylanDeSouzaOOPPart1
 
             isComplete = false;
             this.notes = notes;
+            priority = new Priority(0);
         }
 
         public Task(
@@ -34,14 +35,14 @@ namespace DylanDeSouzaOOPPart1
             bool isComplete,
             DateTime created,
             DateTime? targetDate,
-            int priorityVal)
+            Priority priority)
         {
             this.description = description;
             this.notes = notes;
-            IsComplete = isComplete;
-            Created = created;
+            this.isComplete = isComplete;
+            this.created = created;
             this.targetDate = targetDate;
-            priority = new Priority(priorityVal);
+            this.priority = priority;
         }
 
         public string Description
@@ -77,10 +78,6 @@ namespace DylanDeSouzaOOPPart1
             {
                 return isComplete;
             }
-            private set
-            {
-                isComplete = value;
-            }
         }
 
         public DateTime Created
@@ -88,10 +85,6 @@ namespace DylanDeSouzaOOPPart1
             get
             {
                 return created;
-            }
-            private set
-            {
-                created = value;
             }
         }
 
@@ -101,59 +94,13 @@ namespace DylanDeSouzaOOPPart1
             {
                 return targetDate;
             }
-            set
-            {
-                targetDate = value;
-            }
         }
 
-        public Priority Prio
+        public Priority Priority
         {
             get
             {
                 return priority;
-            }
-            set
-            {
-                priority = value;
-            }
-        }
-
-        public struct Priority
-        {
-            int value;
-
-            public int Value
-            {
-                get
-                {
-                    return value;
-                }
-            }
-
-            public Priority(int v)
-            {
-                value = Math.Clamp(v, -1, 1);
-            }
-
-            public static Priority operator ++(Priority p)
-            {
-                if (p.value < 1)
-                {
-                    p.value++;
-                }
-
-                return p;
-            }
-
-            public static Priority operator --(Priority p)
-            {
-                if (p.value > -1)
-                {
-                    p.value--;
-                }
-
-                return p;
             }
         }
 
@@ -166,13 +113,13 @@ namespace DylanDeSouzaOOPPart1
                     return null;
                 }
 
-                return !IsComplete && DateTime.Now.Date > targetDate.Value;
+                return !isComplete && DateTime.Now.Date > targetDate.Value;
             }
         }
 
         public virtual void ToggleCompleteStatus()
         {
-            IsComplete = !IsComplete;
+            isComplete = !isComplete;
         }
     }
 }

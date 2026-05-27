@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Windows.Storage;
-using System.Diagnostics;
+using static DylanDeSouzaOOPPart1.RepeatingTasks;
 
 namespace DylanDeSouzaOOPPart1
 {
@@ -76,6 +77,7 @@ namespace DylanDeSouzaOOPPart1
 
         void WriteTaskList(BinaryWriter writer, TaskList list)
         {
+            writer.Write(list.GetType().Name);
             writer.Write(list.Name);
             writer.Write(list.NumTasks);
 
@@ -87,8 +89,22 @@ namespace DylanDeSouzaOOPPart1
 
         TaskList ReadTaskList(BinaryReader reader)
         {
+            string taskListType = reader.ReadString();
             string name = reader.ReadString();
-            TaskList list = new TaskList(name);
+
+            TaskList list;
+
+            switch(taskListType)
+            {
+                case "Project":
+                    list = new Project(name);
+                    break;
+
+                default:
+                    list = new TaskList(name);
+                    break;
+            }
+
             int numTasks = reader.ReadInt32();
 
             while (numTasks > 0)
@@ -103,10 +119,9 @@ namespace DylanDeSouzaOOPPart1
 
         void WriteTask(BinaryWriter writer, Task task)
         {
+            writer.Write(task.GetType().Name);
             writer.Write(task.Description);
-
             bool hasNotes = !string.IsNullOrWhiteSpace(task.Notes);
-
             writer.Write(hasNotes);
 
             if (hasNotes)
@@ -123,24 +138,40 @@ namespace DylanDeSouzaOOPPart1
                 writer.Write(task.TargetDate.Value.ToBinary());
             }
 
-            writer.Write(task.Prio.Value);
+            writer.Write(task.Priority.Value);
+            
+            switch (task)
+            {
+                case Habit habit:
+                    writer.Write((int)habit.RepeatFrequency);
+                    writer.Write(habit.CompletionStreak);
+                    break;
+
+                case RepeatingTasks repeatingTasks:
+                    bool hasValue = repeatingTasks.RepeatDate.HasValue;
+                    writer.Write(hasValue);
+
+                    if (hasValue)
+                    {
+                        writer.Write(repeatingTasks.RepeatDate.Value.ToBinary());
+                    }
+
+                    break;
+            }
         }
 
         Task ReadTask(BinaryReader reader)
         {
+            string taskType = reader.ReadString();
+
             string description = reader.ReadString();
 
             bool hasNotes = reader.ReadBoolean();
-
-            string notes = null;
-
-            if (hasNotes)
-            {
-                notes = reader.ReadString();
-            }
+            string notes = hasNotes ? reader.ReadString() : null;
 
             bool isComplete = reader.ReadBoolean();
             DateTime created = DateTime.FromBinary(reader.ReadInt64());
+
             bool hasTargetDate = reader.ReadBoolean();
             DateTime? targetDate;
 
@@ -153,9 +184,76 @@ namespace DylanDeSouzaOOPPart1
                 targetDate = null;
             }
 
-            int priorityValue = reader.ReadInt32();
+            Priority priority = new Priority(reader.ReadInt32());
 
-            return new Task(description, notes, isComplete, created, targetDate, priorityValue);
+            Task task = null;
+
+            switch (taskType)
+            {
+                case "Task":
+                    task = new Task(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority
+                    );
+
+                    break;
+
+                case "RepeatingTasks":
+                {
+                    Frequency frequency = (Frequency)reader.ReadInt32();
+                    DateTime? repeatDate;
+                    bool hasRepeatDate = reader.ReadBoolean();
+
+                    if (hasRepeatDate)
+                    {
+                        repeatDate = DateTime.FromBinary(reader.ReadInt64());
+                    }
+                    else
+                    {
+                        repeatDate = null;
+                    }
+
+                    task = new RepeatingTasks(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority,
+                        frequency,
+                        repeatDate
+                    );
+
+                    break;
+                }
+                    
+
+                case "Habit":
+                {
+                    Frequency frequency = (Frequency)reader.ReadInt32();
+                    int streak = reader.ReadInt32();
+
+                    task = new Habit(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority,
+                        frequency,
+                        streak
+                    );
+
+                    break;
+                }
+                    
+            }
+            
+            return task;
         }
 
         public int TotalNumTasks
@@ -191,6 +289,7 @@ namespace DylanDeSouzaOOPPart1
         public void AddTaskList(TaskList taskList)
         {
             taskLists.Add(taskList);
+            save();
         }
 
         public void RemoveCompletedTasksPerList()

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DylanDeSouzaOOPPart1
 {
@@ -13,14 +9,35 @@ namespace DylanDeSouzaOOPPart1
 
         public Habit(
             string description,
-            bool isComplete,
             Frequency frequency,
             string notes = null
-        ) : base(description, isComplete, frequency, notes)
+        ) : base(description, frequency, notes)
         {
+            Description = description;
+            Notes = notes;
         }
 
-        public int CompletionStreak => completionStreak;
+        public Habit(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            Priority priority,
+            Frequency frequency,
+            int completionStreak
+        ) : base(description, notes, isComplete, created, targetDate, priority, frequency, null)
+        {
+            this.completionStreak = completionStreak;
+        }
+
+        public int CompletionStreak
+        {
+            get
+            {
+                return completionStreak;
+            }
+        }
 
         public void UpdateStreak()
         {

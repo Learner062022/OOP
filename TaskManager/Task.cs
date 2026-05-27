@@ -39,14 +39,14 @@ namespace TaskManager
             bool isComplete,
             DateTime created,
             DateTime? targetDate,
-            int priorityVal)
+            Priority priority)
         {
             this.description = description;
             this.notes = notes;
-            IsComplete = isComplete;
-            Created = created;
+            this.isComplete = isComplete;
+            this.created = created;
             this.targetDate = targetDate;
-            priority = new Priority(priorityVal);
+            this.priority = priority;
         }
 
         public string Description
@@ -82,10 +82,6 @@ namespace TaskManager
             {
                 return isComplete;
             }
-            private set
-            {
-                isComplete = value;
-            }
         }
 
         public DateTime Created
@@ -93,10 +89,6 @@ namespace TaskManager
             get
             {
                 return created;
-            }
-            private set
-            {
-                created = value;
             }
         }
 
@@ -112,53 +104,11 @@ namespace TaskManager
             }
         }
 
-        public Priority Prio
+        public Priority Priority
         {
             get
             {
                 return priority;
-            }
-            set
-            {
-                priority = value;
-            }
-        }
-
-        public struct Priority
-        {
-            int value;
-
-            public int Value
-            {
-                get
-                {
-                    return value;
-                }
-            }
-
-            public Priority(int v)
-            {
-                value = Math.Clamp(v, -1, 1);
-            }
-
-            public static Priority operator ++(Priority p)
-            {
-                if (p.value < 1)
-                {
-                    p.value++;
-                }
-
-                return p;
-            }
-
-            public static Priority operator --(Priority p)
-            {
-                if (p.value > -1)
-                {
-                    p.value--;
-                }
-
-                return p;
             }
         }
 
@@ -171,7 +121,7 @@ namespace TaskManager
                     return null;
                 }
 
-                return !IsComplete && DateTime.Now.Date > targetDate.Value;
+                return !isComplete && DateTime.Now.Date > targetDate.Value;
             }
         }
 

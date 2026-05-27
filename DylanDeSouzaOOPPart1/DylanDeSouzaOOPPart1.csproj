@@ -116,17 +116,25 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TaskCollection.cs" />
-    <Compile Include="TaskList.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Task.cs" />
-  </ItemGroup>
+  <Compile Include="App.xaml.cs">
+    <DependentUpon>App.xaml</DependentUpon>
+  </Compile>
+
+  <Compile Include="TaskCollection.cs" />
+  <Compile Include="TaskList.cs" />
+  <Compile Include="Task.cs" />
+
+  <Compile Include="Habit.cs" />
+  <Compile Include="RepeatingTasks.cs" />
+  <Compile Include="Project.cs" />
+  <Compile Include="Priority.cs" />
+
+  <Compile Include="MainPage.xaml.cs">
+    <DependentUpon>MainPage.xaml</DependentUpon>
+  </Compile>
+
+  <Compile Include="Properties\AssemblyInfo.cs" />
+</ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>

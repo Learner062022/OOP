@@ -9,16 +9,33 @@ namespace TaskManager
 
         public Habit(
             string description,
-            bool isComplete,
             Frequency frequency,
-            string? notes = null
-        ) : base(description, frequency)
+            string notes = null
+        ) : base(description, frequency, notes)
         {
-            Description = description;
-            Notes = notes;
         }
 
-        public int CompletionStreak => completionStreak;
+        public Habit(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            Priority priority,
+            Frequency frequency,
+            int completionStreak
+        ) : base(description, notes, isComplete, created, targetDate, priority, frequency, null)
+        {
+            this.completionStreak = completionStreak;
+        }
+
+        public int CompletionStreak
+        {
+            get
+            {
+                return completionStreak;
+            }
+        }
 
         public void UpdateStreak()
         {

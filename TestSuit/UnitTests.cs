@@ -69,6 +69,8 @@ namespace TestSuit
         [TestMethod]
         public void PlaceHabitInProject()
         {
+            project.AddTask(habit);
+            Assert.AreEqual(0, project.NumTasks);
         }
 
         [TestMethod]

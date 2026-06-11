@@ -88,6 +88,13 @@ namespace TestSuit
         [TestMethod]
         public void CompleteIncompleteTaskUpdatesCount()
         {
+            list.AddTask(task);
+            task.ToggleCompleteStatus();
+            Assert.IsTrue(task.IsComplete);
+            Assert.AreEqual(0, list.NumIncompleteTasks);
+            task.ToggleCompleteStatus();
+            Assert.IsFalse(task.IsComplete);
+            Assert.AreEqual(1, list.NumIncompleteTasks);
         }
 
         [TestMethod]

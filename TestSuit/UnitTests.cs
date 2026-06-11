@@ -34,6 +34,9 @@ namespace TestSuit
         [TestMethod]
         public void AddListToCollection()
         {
+            list.AddTask(task);
+            collection.AddTaskList(list);
+            Assert.AreEqual(1, collection.TotalNumTasks);
         }
 
         [TestMethod]

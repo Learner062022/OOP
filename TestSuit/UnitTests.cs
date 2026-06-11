@@ -8,7 +8,10 @@ namespace TestSuit
     {
         TaskCollection collection;
         TaskList list;
-
+        Task task;
+        Project project;
+        RepeatingTasks repeatingTask;
+        Habit habit;
 
         [TestInitialize]
         public void Setup()

@@ -81,6 +81,8 @@ namespace TestSuit
         [TestMethod]
         public void PlaceRepeatingTaskInProject()
         {
+            project.AddTask(repeatingTask);
+            Assert.AreEqual(0, project.NumTasks);
         }
 
         [TestMethod]

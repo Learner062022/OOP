@@ -27,7 +27,6 @@ namespace TestSuit
         [TestMethod]
         public void AddingTasksAndCount()
         {
-            Task task = new Task("task1");
             list.AddTask(task);
             Assert.AreEqual(1, list.NumTasks);
         }

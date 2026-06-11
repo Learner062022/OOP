@@ -17,7 +17,11 @@ namespace TestSuit
         public void Setup()
         {
             collection = new TaskCollection();
-            list = new TaskList("taskList1");
+            list = new TaskList("list1");
+            task = new Task("task1");
+            project = new Project("project1");
+            repeatingTask = new RepeatingTasks("repeatingTask1", RepeatingTasks.Frequency.Daily);
+            habit = new Habit("habit1", Habit.Frequency.Weekly);
         }
 
         [TestMethod]

@@ -100,11 +100,10 @@ namespace TestSuit
         [TestMethod]
         public void DeleteTasksUpdatesCount()
         {
-        }
-
-        [TestMethod]
-        public void EmptyListUpdatesCount()
-        {
+            list.AddTask(task);
+            task.ToggleCompleteStatus();
+            list.RemoveCompletedTasks();
+            Assert.AreEqual(0, list.NumTasks);
         }
     }
 }

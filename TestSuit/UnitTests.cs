@@ -40,8 +40,10 @@ namespace TestSuit
         }
 
         [TestMethod]
-        public void SetTaskNameBlank()
+        public void SetTaskDescriptionBlank()
         {
+            task.Description = "";
+            Assert.AreEqual("task1", task.Description);
         }
 
         [TestMethod]

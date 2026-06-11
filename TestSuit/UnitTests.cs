@@ -61,6 +61,9 @@ namespace TestSuit
         [TestMethod]
         public void ProjectPercentComplete()
         {
+            task.ToggleCompleteStatus();
+            project.AddTask(task);
+            Assert.AreEqual(100, project.Progress);
         }
 
         [TestMethod]

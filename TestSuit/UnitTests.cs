@@ -49,6 +49,8 @@ namespace TestSuit
         [TestMethod]
         public void SetListNameBlank()
         {
+            list.Name = "";
+            Assert.AreEqual("list1", list.Name);
         }
 
         [TestMethod]

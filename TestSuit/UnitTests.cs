@@ -18,7 +18,9 @@ namespace TestSuit
         [TestInitialize]
         public void Setup()
         {
-            collection = new TaskCollection();
+            taskSerializer = new TaskSerializer();
+            listSerializer = new TaskListSerializer(taskSerializer);
+            collection = new TaskCollection(listSerializer);
             list = new TaskList("list1");
             task = new Task("task1");
             project = new Project("project1");

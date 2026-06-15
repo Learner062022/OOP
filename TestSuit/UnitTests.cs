@@ -12,6 +12,8 @@ namespace TestSuit
         Project project;
         RepeatingTasks repeatingTask;
         Habit habit;
+        TaskSerializer taskSerializer;
+        TaskListSerializer listSerializer;
 
         [TestInitialize]
         public void Setup()

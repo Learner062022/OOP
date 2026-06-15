@@ -109,5 +109,27 @@ namespace TestSuit
             list.RemoveCompletedTasks();
             Assert.AreEqual(0, list.NumTasks);
         }
+
+        [TestMethod]
+        public async STask SavingAndLoadingPropject()
+        {
+            project.AddTask(task);
+            collection.AddTaskList(project);
+            await collection.Save();
+            await collection.Load();
+            Assert.IsInstanceOfType<Project>(collection.TaskLists[0]);
+            Assert.AreEqual("project1", collection.TaskLists[0].Name);
+        }
+
+        [TestMethod]
+        public async STask SavingAndLoadingHabbit()
+        {
+            list.AddTask(habit);
+            collection.AddTaskList(list);
+            await collection.Save();
+            await collection.Load();
+            Assert.IsInstanceOfType<Habit>(collection.TaskLists[0].Tasks[0]);
+        }
+
     }
 }

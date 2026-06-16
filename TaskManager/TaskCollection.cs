@@ -26,21 +26,16 @@ namespace TaskManager
             this.listSerializer = listSerializer;
         }
 
-        async void load()
+        public async STask Load()
         {
-            try
-            {
-                file = await storageFolder.CreateFileAsync(FILENAME, CreationCollisionOption.OpenIfExists);
-                taskLists.Clear();
-            }
-            catch (FileNotFoundException)
-            {
-                file = await storageFolder.CreateFileAsync(FILENAME);
-            }
+            file = await storageFolder.CreateFileAsync(
+                FILENAME,
+                CreationCollisionOption.OpenIfExists);
 
-            Debug.WriteLine($"FilePath: {file.Path}");
+            Debug.WriteLine($"FilePath: {filePath}");
 
-            using (var reader = new BinaryReader(OpenFileStream(FileMode.Open), Encoding.UTF8, false))
+            using (var stream = await file.OpenStreamForReadAsync())
+            using (var reader = new BinaryReader(stream, Encoding.UTF8))
             {
                 if (reader.BaseStream.Length == 0)
                 {
@@ -51,7 +46,7 @@ namespace TaskManager
 
                 while (numLists > 0)
                 {
-                    TaskList list = ReadTaskList(reader);
+                    TaskList list = listSerializer.ReadTaskList(reader);
                     taskLists.Add(list);
                     numLists--;
                 }

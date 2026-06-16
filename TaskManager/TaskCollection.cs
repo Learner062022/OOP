@@ -112,7 +112,6 @@ namespace TaskManager
         public void AddTaskList(TaskList taskList)
         {
             taskLists.Add(taskList);
-            save();
         }
 
         public void RemoveCompletedTasksPerList()

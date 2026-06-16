@@ -12,11 +12,15 @@ namespace TestSuit
         Project project;
         RepeatingTasks repeatingTask;
         Habit habit;
+        TaskSerializer taskSerializer;
+        TaskListSerializer listSerializer;
 
         [TestInitialize]
         public void Setup()
         {
-            collection = new TaskCollection();
+            taskSerializer = new TaskSerializer();
+            listSerializer = new TaskListSerializer(taskSerializer);
+            collection = new TaskCollection(listSerializer);
             list = new TaskList("list1");
             task = new Task("task1");
             project = new Project("project1");
@@ -105,5 +109,27 @@ namespace TestSuit
             list.RemoveCompletedTasks();
             Assert.AreEqual(0, list.NumTasks);
         }
+
+        [TestMethod]
+        public async STask SavingAndLoadingPropject()
+        {
+            project.AddTask(task);
+            collection.AddTaskList(project);
+            await collection.Save();
+            await collection.Load();
+            Assert.IsInstanceOfType<Project>(collection.TaskLists[0]);
+            Assert.AreEqual("project1", collection.TaskLists[0].Name);
+        }
+
+        [TestMethod]
+        public async STask SavingAndLoadingHabbit()
+        {
+            list.AddTask(habit);
+            collection.AddTaskList(list);
+            await collection.Save();
+            await collection.Load();
+            Assert.IsInstanceOfType<Habit>(collection.TaskLists[0].Tasks[0]);
+        }
+
     }
 }

@@ -116,7 +116,6 @@ namespace TaskManager
 
             writer.Write(task.IsComplete);
             writer.Write(task.Created.ToBinary());
-            writer.Write(task.TargetDate.HasValue);
 
             WriteOptionalDate(writer, task.TargetDate);
             writer.Write(task.Priority.Value);

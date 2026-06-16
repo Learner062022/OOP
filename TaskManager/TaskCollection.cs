@@ -15,18 +15,15 @@ namespace TaskManager
         StorageFile file;
         const string FILENAME = "myFile.bin";
         string filePath;
+        TaskListSerializer listSerializer;
 
-        public TaskCollection()
+        public TaskCollection(TaskListSerializer listSerializer)
         {
             taskLists = new List<TaskList>();
             storageFolder = ApplicationData.Current.LocalFolder;
             filePath = Path.Combine(storageFolder.Path, FILENAME);
-            load();
-        }
 
-        FileStream OpenFileStream(FileMode mode)
-        {
-            return File.Open(filePath, mode);
+            this.listSerializer = listSerializer;
         }
 
         async void load()

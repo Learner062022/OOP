@@ -132,5 +132,14 @@ namespace TestSuit
             Assert.IsInstanceOfType<Habit>(collection.TaskLists[0].Tasks[0]);
         }
 
+        [TestMethod]
+        public async STask SavingAndLoadingRepeatingTasks()
+        {
+            list.AddTask(repeatingTask);
+            collection.AddTaskList(list);
+            await collection.Save();
+            await collection.Load();
+            Assert.IsInstanceOfType<RepeatingTasks>(collection.TaskLists[0].Tasks[0]);
+        }
     }
 }

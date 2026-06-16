@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TaskManager;
+using STask = System.Threading.Tasks.Task;
 
 namespace TestSuit
 {

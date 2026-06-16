@@ -151,5 +151,26 @@ namespace TestSuit
             await collection.Load();
             Assert.IsInstanceOfType<Task>(collection.TaskLists[0].Tasks[0]);
         }
+
+        [TestMethod]
+        public async STask SavingAndLoadingMixed()
+        {
+            list.AddTask(task);
+            list.AddTask(habit);
+            list.AddTask(repeatingTask);
+            collection.AddTaskList(list);
+            collection.AddTaskList(project);
+            await collection.Save();
+            await collection.Load();
+
+            Assert.IsInstanceOfType<Task>(collection.TaskLists[0].Tasks[0]);
+            Assert.AreEqual("task1", collection.TaskLists[0].Tasks[0].Description);
+            Assert.IsInstanceOfType<Habit>(collection.TaskLists[0].Tasks[1]);
+            Assert.AreEqual("habit1", collection.TaskLists[0].Tasks[1].Description);
+            Assert.IsInstanceOfType<RepeatingTasks>(collection.TaskLists[0].Tasks[2]);
+            Assert.AreEqual("repeatingTask1", collection.TaskLists[0].Tasks[2].Description);
+            Assert.IsInstanceOfType<Project>(collection.TaskLists[1]);
+            Assert.AreEqual("project1", collection.TaskLists[1].Name);
+        }
     }
 }

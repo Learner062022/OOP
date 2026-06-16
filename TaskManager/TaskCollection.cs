@@ -53,19 +53,13 @@ namespace TaskManager
             }
         }
 
-        void save()
+        public List<TaskList> TaskLists
         {
-            using (var writer = new BinaryWriter(OpenFileStream(FileMode.Create), Encoding.UTF8, false))
+            get
             {
-                int numLists = taskLists.Count;
-                writer.Write(numLists);
-
-                foreach (TaskList list in taskLists)
-                {
-                    WriteTaskList(writer, list);
+                return taskLists;
                 }
             }
-        }
 
         void WriteTaskList(BinaryWriter writer, TaskList list)
         {

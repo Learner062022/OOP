@@ -1,0 +1,83 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TaskManager;
+
+namespace TestSuit
+{
+    [TestClass]
+    public class UnitTests
+    {
+        TaskCollection collection;
+        TaskList list;
+
+
+        [TestInitialize]
+        public void Setup()
+        {
+            collection = new TaskCollection();
+            list = new TaskList("taskList1");
+        }
+
+        [TestMethod]
+        public void AddingTasksAndCount()
+        {
+            Task task = new Task("task1");
+            list.AddTask(task);
+            Assert.AreEqual(1, list.NumTasks);
+        }
+
+        [TestMethod]
+        public void AddListToCollection()
+        {
+        }
+
+        [TestMethod]
+        public void SetTaskNameBlank()
+        {
+        }
+
+        [TestMethod]
+        public void SetListNameBlank()
+        {
+        }
+
+        [TestMethod]
+        public void RepeatingTasksRepeatCorrectly()
+        {
+        }
+
+        [TestMethod]
+        public void ProjectPercentComplete()
+        {
+        }
+
+        [TestMethod]
+        public void PlaceHabitInProject()
+        {
+        }
+
+        [TestMethod]
+        public void RepeatingTaskWithIncompleteInfo()
+        {
+        }
+
+        [TestMethod]
+        public void PlaceRepeatingTaskInProject()
+        {
+        }
+
+        [TestMethod]
+        public void CompleteIncompleteTaskUpdatesCount()
+        {
+        }
+
+        [TestMethod]
+        public void DeleteTasksUpdatesCount()
+        {
+        }
+
+        [TestMethod]
+        public void EmptyListUpdatesCount()
+        {
+        }
+    }
+}

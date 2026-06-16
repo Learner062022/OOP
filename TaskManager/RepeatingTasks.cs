@@ -15,12 +15,28 @@ namespace TaskManager
 
         public RepeatingTasks(
             string description,
-            bool isComplete,
             Frequency frequency,
-            string notes = null
+            string notes = null,
+            DateTime? repeatDate = null
         ) : base(description, notes)
         {
             this.frequency = frequency;
+            this.repeatDate = repeatDate;
+        }
+
+        public RepeatingTasks(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            Priority priority,
+            Frequency frequency,
+            DateTime? repeatDate = null
+        ) : base(description, notes, isComplete, created, targetDate, priority)
+        {
+            this.frequency = frequency;
+            this.repeatDate = repeatDate;
         }
 
         public override void ToggleCompleteStatus()
@@ -29,10 +45,28 @@ namespace TaskManager
 
             if (IsComplete)
             {
-                repeatDate = DateTime.Now.Date.AddDays((int)frequency);
+                if (repeatDate.HasValue)
+                {
+                    repeatDate = repeatDate.Value.AddDays((int)frequency);
+                }
+                
             }
         }
 
-        public DateTime? RepeatDate => repeatDate;
+        public DateTime? RepeatDate
+        {
+            get
+            {
+                return repeatDate;
+            }
+        }
+
+        public Frequency RepeatFrequency
+        {
+            get
+            {
+                return frequency;
+            }
+        }
     }
 }

@@ -7,11 +7,13 @@ namespace TaskManager
         string description;
         string notes;
         bool isComplete;
-        readonly DateTime? created;
+        DateTime created;
+        DateTime? targetDate;
+        Priority priority;
 
         public Task(string description, string notes = null)
         {
-            Created = DateTime.Now.Date;
+            created = DateTime.Now.Date;
 
             if (string.IsNullOrWhiteSpace(description))
             {
@@ -24,6 +26,23 @@ namespace TaskManager
 
             isComplete = false;
             this.notes = notes;
+            priority = new Priority(0);
+        }
+
+        public Task(
+            string description,
+            string notes,
+            bool isComplete,
+            DateTime created,
+            DateTime? targetDate,
+            Priority priority)
+        {
+            this.description = description;
+            this.notes = notes;
+            this.isComplete = isComplete;
+            this.created = created;
+            this.targetDate = targetDate;
+            this.priority = priority;
         }
 
         public string Description
@@ -59,10 +78,6 @@ namespace TaskManager
             {
                 return isComplete;
             }
-            private set
-            {
-                isComplete = value;
-            }
         }
 
         public DateTime Created
@@ -70,10 +85,6 @@ namespace TaskManager
             get
             {
                 return created;
-            }
-            private set
-            {
-                created = value;
             }
         }
 
@@ -83,59 +94,13 @@ namespace TaskManager
             {
                 return targetDate;
             }
-            set
-            {
-                targetDate = value;
-            }
         }
 
-        public Priority Prio
+        public Priority Priority
         {
             get
             {
                 return priority;
-            }
-            set
-            {
-                priority = value;
-            }
-        }
-
-        public struct Priority
-        {
-            int value;
-
-            public int Value
-            {
-                get
-                {
-                    return value;
-                }
-            }
-
-            public Priority(int v)
-            {
-                value = Math.Clamp(v, -1, 1);
-            }
-
-            public static Priority operator ++(Priority p)
-            {
-                if (p.value < 1)
-                {
-                    p.value++;
-                }
-
-                return p;
-            }
-
-            public static Priority operator --(Priority p)
-            {
-                if (p.value > -1)
-                {
-                    p.value--;
-                }
-
-                return p;
             }
         }
 
@@ -148,13 +113,13 @@ namespace TaskManager
                     return null;
                 }
 
-                return !IsComplete && DateTime.Now.Date > targetDate.Value;
+                return !isComplete && DateTime.Now.Date > targetDate.Value;
             }
         }
 
         public virtual void ToggleCompleteStatus()
         {
-            IsComplete = !IsComplete;
+            isComplete = !isComplete;
         }
     }
 }

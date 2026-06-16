@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Windows.Storage;
-using System.Diagnostics;
+using static TaskManager.RepeatingTasks;
 
 namespace TaskManager
 {
@@ -76,6 +77,7 @@ namespace TaskManager
 
         void WriteTaskList(BinaryWriter writer, TaskList list)
         {
+            writer.Write(list.GetType().Name);
             writer.Write(list.Name);
             writer.Write(list.NumTasks);
 
@@ -87,8 +89,22 @@ namespace TaskManager
 
         TaskList ReadTaskList(BinaryReader reader)
         {
+            string taskListType = reader.ReadString();
             string name = reader.ReadString();
-            TaskList list = new TaskList(name);
+
+            TaskList list;
+
+            switch(taskListType)
+            {
+                case "Project":
+                    list = new Project(name);
+                    break;
+
+                default:
+                    list = new TaskList(name);
+                    break;
+            }
+
             int numTasks = reader.ReadInt32();
 
             while (numTasks > 0)
@@ -101,12 +117,23 @@ namespace TaskManager
             return list;
         }
 
+        void WriteOptionalDate(BinaryWriter writer, DateTime? date)
+        {
+            bool hasValue = date.HasValue;
+            writer.Write(hasValue);
+
+            if (hasValue)
+            {
+                writer.Write(date.Value.ToBinary());
+            }
+        }
+
         void WriteTask(BinaryWriter writer, Task task)
         {
+            writer.Write(task.GetType().Name);
             writer.Write(task.Description);
 
             bool hasNotes = !string.IsNullOrWhiteSpace(task.Notes);
-
             writer.Write(hasNotes);
 
             if (hasNotes)
@@ -118,44 +145,104 @@ namespace TaskManager
             writer.Write(task.Created.ToBinary());
             writer.Write(task.TargetDate.HasValue);
 
-            if (task.TargetDate.HasValue)
+            WriteOptionalDate(writer, task.TargetDate);
+            writer.Write(task.Priority.Value);
+
+            switch (task)
             {
-                writer.Write(task.TargetDate.Value.ToBinary());
+                case Habit habit:
+                    writer.Write((int)habit.RepeatFrequency);
+                    WriteOptionalDate(writer, habit.RepeatDate);
+                    writer.Write(habit.CompletionStreak);
+                    break;
+
+                case RepeatingTasks repeatingTasks:
+                    writer.Write((int)repeatingTasks.RepeatFrequency);
+                    WriteOptionalDate(writer, repeatingTasks.RepeatDate);
+                    break;
+            }
+        }
+
+        DateTime? ReadOptionalDate(BinaryReader reader)
+        {
+            bool hasDate = reader.ReadBoolean();
+            DateTime? optionalDate;
+
+            if (hasDate)
+            {
+                optionalDate = DateTime.FromBinary(reader.ReadInt64());
+            }
+            else
+            {
+                optionalDate = null;
             }
 
-            writer.Write(task.Prio.Value);
+            return optionalDate;
         }
 
         Task ReadTask(BinaryReader reader)
         {
+            string taskType = reader.ReadString();
             string description = reader.ReadString();
 
-            bool hasNotes = reader.ReadBoolean();
-
-            string notes = null;
-
-            if (hasNotes)
-            {
-                notes = reader.ReadString();
-            }
-
+            string notes = reader.ReadBoolean() ? reader.ReadString() : null;
             bool isComplete = reader.ReadBoolean();
+
             DateTime created = DateTime.FromBinary(reader.ReadInt64());
-            bool hasTargetDate = reader.ReadBoolean();
-            DateTime? targetDate;
+            DateTime? targetDate = ReadOptionalDate(reader);
+            Priority priority = new Priority(reader.ReadInt32());
 
-            if (hasTargetDate)
+            switch (taskType)
             {
-                targetDate = DateTime.FromBinary(reader.ReadInt64());
-            }
-            else
-            {
-                targetDate = null;
+                case "Task":
+                {
+                    return new Task(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority
+                    );
+                }
+
+                case "RepeatingTasks":
+                {
+                    Frequency frequency = (Frequency)reader.ReadInt32();
+                    DateTime? repeatDate = ReadOptionalDate(reader);
+
+                    return new RepeatingTasks(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority,
+                        frequency,
+                        repeatDate
+                    );
+                }
+
+                case "Habit":
+                {
+                    Frequency frequency = (Frequency)reader.ReadInt32();
+                    DateTime? repeatDate = ReadOptionalDate(reader);
+                    int streak = reader.ReadInt32();
+
+                    return new Habit(
+                        description,
+                        notes,
+                        isComplete,
+                        created,
+                        targetDate,
+                        priority,
+                        frequency,
+                        streak
+                    );
+                }
             }
 
-            int priorityValue = reader.ReadInt32();
-
-            return new Task(description, notes, isComplete, created, targetDate, priorityValue);
+            return null;
         }
 
         public int TotalNumTasks
@@ -191,6 +278,7 @@ namespace TaskManager
         public void AddTaskList(TaskList taskList)
         {
             taskLists.Add(taskList);
+            save();
         }
 
         public void RemoveCompletedTasksPerList()

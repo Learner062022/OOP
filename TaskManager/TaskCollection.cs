@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Windows.Storage;
-using static TaskManager.RepeatingTasks;
+using STask = System.Threading.Tasks.Task;
 
 namespace TaskManager
 {

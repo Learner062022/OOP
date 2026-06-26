@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Windows.Storage;
 using STask = System.Threading.Tasks.Task;
@@ -120,6 +121,54 @@ namespace TaskManager
             {
                 taskList.RemoveCompletedTasks();
             }
+        }
+
+        public List<Task> TasksSortedByDescription()
+        {
+            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
+            tasks.Sort((t1, t2) => t1.Description.CompareTo(t2.Description));
+            return tasks;
+        }
+
+        public List<Task> TasksSortedByDueDate()
+        {
+            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
+            tasks.Sort((t1, t2) => t1.TargetDate.Value.CompareTo(t2.TargetDate.Value));
+            return tasks;
+        }
+        
+        public List<Task> TasksSortedByCreationDate()
+        {
+            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
+            tasks.Sort((t1, t2) => t1.Created.CompareTo(t2.Created));
+            return tasks;
+        }
+        
+        public List<Task> TasksSortedByPriority()
+        {
+            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
+            tasks.Sort((t1, t2) => t1.Priority.Value.CompareTo(t2.Priority.Value));
+            return tasks;
+        }
+
+        public List<Habit> GetHabits()
+        {
+            return taskLists.SelectMany(list => list.Tasks).OfType<Habit>().ToList();
+        }
+
+        public List<RepeatingTasks> GetRepeatingTasks()
+        {
+            return taskLists.SelectMany(list => list.Tasks).OfType<RepeatingTasks>().ToList();
+        }
+        
+        public List<Task> TasksDueToday()
+        { 
+            return taskLists.SelectMany(list => list.Tasks).Where(task => task.TargetDate == DateTime.Now.Date).ToList();
+        }
+        
+        public List<Task> TasksWithGivenDescription(string description)
+        {
+            return taskLists.SelectMany(list => list.Tasks).Where(task => task.Description == description).ToList();
         }
     }
 }

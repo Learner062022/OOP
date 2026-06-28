@@ -1,4 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 using TaskManager;
 using STask = System.Threading.Tasks.Task;
 
@@ -23,10 +25,11 @@ namespace TestSuit
             listSerializer = new TaskListSerializer(taskSerializer);
             collection = new TaskCollection(listSerializer);
             list = new TaskList("list1");
-            task = new Task("task1");
+            task = new Task("task1", null, new DateTime(2026, 06, 28));
             project = new Project("project1");
             repeatingTask = new RepeatingTasks("repeatingTask1", RepeatingTasks.Frequency.Daily);
-            habit = new Habit("habit1", Habit.Frequency.Weekly);
+            habit = new Habit("habit1", RepeatingTasks.Frequency.Weekly);
+            
         }
 
         [TestMethod]
@@ -171,6 +174,76 @@ namespace TestSuit
             Assert.AreEqual("repeatingTask1", collection.TaskLists[0].Tasks[2].Description);
             Assert.IsInstanceOfType<Project>(collection.TaskLists[1]);
             Assert.AreEqual("project1", collection.TaskLists[1].Name);
+        }
+
+        [TestMethod]
+        public void SortTasksByDescription()
+        {
+            task.Description = "clean room";
+            list.AddTask(task);
+
+            Task task2 = new Task("buy groceries");
+            list.AddTask(task2);
+
+            collection.AddTaskList(list);
+
+            var sortedTasks = collection.TasksSortedByDescription();
+
+            CollectionAssert.AreEqual(
+                list.Tasks.OrderBy(t => t.Description).ToList(),
+                sortedTasks);
+        }
+
+        [TestMethod]
+        public void SortTasksByDueDate()
+        {
+            Task task2 = new Task("buy groceries", null, new DateTime(2026, 01, 01));
+
+            list.AddTask(task);
+            list.AddTask(task2);
+
+            collection.AddTaskList(list);
+
+            var sortedTasks = collection.TasksSortedByDueDate();
+
+            CollectionAssert.AreEqual(
+                list.Tasks.OrderBy(t => t.TargetDate).ToList(),
+                sortedTasks);
+        }
+
+        [TestMethod]
+        public void SortTasksByCreationDate()
+        {
+            list.AddTask(task);
+
+            Task task2 = new Task(new DateTime(2026, 01, 01), "buy groceries");
+            list.AddTask(task2);
+
+            collection.AddTaskList(list);
+
+            var sortedTasks = collection.TasksSortedByCreationDate();
+
+            CollectionAssert.AreEqual(
+                list.Tasks.OrderBy(t => t.Created).ToList(),
+                sortedTasks);
+        }
+
+        [TestMethod]
+        public void SortTasksByPriority()
+        {
+            Task task2 = new Task("buy groceries");
+            task2.Priority++;
+
+            list.AddTask(task);
+            list.AddTask(task2);
+
+            collection.AddTaskList(list);
+
+            var sortedTasks = collection.TasksSortedByPriority();
+
+            CollectionAssert.AreEqual(
+                list.Tasks.OrderBy(t => t.Priority.Value).ToList(),
+                sortedTasks);
         }
     }
 }

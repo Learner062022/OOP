@@ -125,29 +125,25 @@ namespace TaskManager
 
         public List<Task> TasksSortedByDescription()
         {
-            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
-            tasks.Sort((t1, t2) => t1.Description.CompareTo(t2.Description));
+            var tasks = taskLists.SelectMany(list => list.Tasks).OrderBy(task => task.Description).ToList();
             return tasks;
         }
 
         public List<Task> TasksSortedByDueDate()
         {
-            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
-            tasks.Sort((t1, t2) => t1.TargetDate.Value.CompareTo(t2.TargetDate.Value));
+            var tasks = taskLists.SelectMany(list => list.Tasks).OrderBy(task => task.TargetDate).ToList();
             return tasks;
         }
         
         public List<Task> TasksSortedByCreationDate()
         {
-            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
-            tasks.Sort((t1, t2) => t1.Created.CompareTo(t2.Created));
+            var tasks = taskLists.SelectMany(list => list.Tasks).OrderBy(task => task.Created).ToList();
             return tasks;
         }
         
         public List<Task> TasksSortedByPriority()
         {
-            var tasks = taskLists.SelectMany(list => list.Tasks).ToList();
-            tasks.Sort((t1, t2) => t1.Priority.Value.CompareTo(t2.Priority.Value));
+            var tasks = taskLists.SelectMany(list => list.Tasks).OrderBy(task => task.Priority.Value).ToList();
             return tasks;
         }
 

@@ -34,6 +34,16 @@ namespace TaskManager
         }
 
         public Task(
+            DateTime createdFake,
+            string description,
+            string? notes = null,
+            DateTime? targetDate = null)
+            : this(description, notes, targetDate)
+        {
+            created = createdFake;
+        }
+
+        public Task(
             string description,
             string notes,
             bool isComplete,
